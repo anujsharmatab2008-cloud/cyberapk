@@ -9,25 +9,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Flet
+      - name: Install Dependencies
         run: |
           pip install flet
           pip install -r requirements.txt
 
       - name: Build APK
-        uses: flet-dev/build-flet-apk-action@v1
-        with:
-          path: app.py
-          project_name: "CyberAggregator"
-          package_name: "com.cyber.aggregator"
+        run: |
+          # This command builds the APK and automatically handles the Flet-to-Flutter conversion
+          flet build apk --no-rich-output
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

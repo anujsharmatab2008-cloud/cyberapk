@@ -41,7 +41,7 @@ jobs:
 
     - name: Compile Application to Android APK
       run: |
-        flet build apk
+        flet build apk --no-rich-output
 
     - name: Upload Finished Installer Asset
       uses: actions/upload-artifact@v4

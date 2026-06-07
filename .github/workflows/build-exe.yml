@@ -10,18 +10,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      # Use caching to prevent the "timeout/cancel" issue
+      - name: Cache Flutter
+        uses: actions/cache@v4
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-sdk-cache
+      
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           
-      - name: Build APK
-        uses: flet-dev/build-flet-apk-action@v1
-        with:
-          path: app.py
-          project_name: "CyberAggregator"
-          package_name: "com.cyber.aggregator"
-
+      - name: Install Flet
+        run: pip install flet
+        
+      - name: Build APK (Non-Interactive)
+        # We explicitly set the environment to force no interaction
+        env:
+          FLET_FORCE_YES: "true"
+        run: flet build apk
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:

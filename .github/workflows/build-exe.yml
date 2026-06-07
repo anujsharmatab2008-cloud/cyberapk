@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Set up Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Set Up Python Ecosystem
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Flet SDK & Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Flutter Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev
+
+    - name: Setup Flutter Engine
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Compile Application to Android APK
+      run: |
+        flet build apk
+
+    - name: Upload Finished Installer Asset
+      uses: actions/upload-artifact@v4
+      with:
+        name: Cyber-Aggregator-Android-App
+        path: build/apk/*.apk
